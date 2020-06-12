@@ -1,0 +1,96 @@
+#lang racket
+
+(require rackunit)
+(require rackunit/text-ui)
+
+(define (int_to_bool n)
+  (int_to_bool_h n '())
+)
+
+(define (int_to_bool_h n L)
+  (if (= n 0)
+      L
+      (if (= (quotient n 2) 0)
+          (cons(if (= (remainder n 2) 0) #f #t) L)
+          (int_to_bool_h (quotient n 2) (cons(if (= (remainder n 2) 0) #f #t) L))
+          )
+      )
+  )
+
+(define (pad num_bits bit_list)
+  (if (or (= num_bits 0) (= num_bits (length bit_list)))
+      bit_list
+      (pad num_bits (cons #f bit_list))
+      )
+  )
+
+;Question 3
+;Generate a Truth Table
+;Given a number of variables n
+;generate a truth table will all variable settings.
+;The truth table should have rows with values starting at
+;2^n-1 and ending at 0.
+;For example, the truth tables for n=2 is
+;( (#t #t) (#t #f) (#f #t) (#f #f) )
+;Notice: A "Table" is a list of lists
+;As integers this is (3 2 1 0)
+;The number of bits is n.
+
+;Define the below function
+(define (tt_inputs n)
+  (tt_inputs_h n (- (expt 2 n) 1))
+)
+(define (tt_inputs_h bits row_val)
+  (if (= bits 0)
+      (list '())
+      (if (= row_val 0)
+          (cons (pad bits (int_to_bool row_val)) '())
+          (cons (pad bits (int_to_bool row_val)) (tt_inputs_h bits (- row_val 1)))
+          )
+      )
+  )
+;Check your function with the following tests
+(define-test-suite test_tt
+  (check-equal? (tt_inputs 0)
+                '(())
+  )
+  (check-equal? (tt_inputs 1)
+                '( (#t) (#f) )
+  )
+  (check-equal? (tt_inputs 2)
+                '( (#t #t) (#t #f) (#f #t) (#f #f))
+  )
+  (check-equal? (tt_inputs 3)
+                '( (#t #t #t)
+                   (#t #t #f)
+                   (#t #f #t)
+                   (#t #f #f)
+                   (#f #t #t)
+                   (#f #t #f)
+                   (#f #f #t)
+                   (#f #f #f)
+                   )
+   )
+   (check-equal? (tt_inputs 4)
+                '(
+                   (#t #t #t #t)
+                   (#t #t #t #f)
+                   (#t #t #f #t)
+                   (#t #t #f #f)
+                   (#t #f #t #t)
+                   (#t #f #t #f)
+                   (#t #f #f #t)
+                   (#t #f #f #f)
+                   (#f #t #t #t)
+                   (#f #t #t #f)
+                   (#f #t #f #t)
+                   (#f #t #f #f)
+                   (#f #f #t #t)
+                   (#f #f #t #f)
+                   (#f #f #f #t)
+                   (#f #f #f #f)
+                   )
+   )
+)
+(display "Question 3.) tt_inputs Results (10 points)\n")
+(define q3_score (- 10 (* 2 (run-tests test_tt 'verbose))))

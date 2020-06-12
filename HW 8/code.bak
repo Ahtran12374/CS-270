@@ -1,0 +1,54 @@
+#lang racket
+(require rackunit)
+(require rackunit/text-ui)
+
+(define (spec_sum n)
+  (if (equal? n 1)
+      6
+      (+ (* 6 (* n n)) (spec_sum (- n 1)))
+      )
+)
+
+(define (evenzeros X)
+  (if (null? X)
+      #t
+      (xor (equal? (first X) 0) (evenzeros (rest X)))
+      )
+)
+
+(define (duplicate X)
+  (if (null? X)
+      '()
+      (append (cons (first X) (cons (first X) '())) (duplicate (rest X)))
+      )
+)
+
+(define (cut_end L)
+  (if (null? (rest L))
+      '()
+      (cons (first L) (cut_end (rest L)))
+      )
+)
+
+(define (add_pairs L)
+  (if (null? L)
+      '()
+      (cons (+ (first L) (second L)) (add_pairs (rest(rest L))))
+      )
+)
+
+(display "Question 5a add_pairs Tests (10 points)\n")
+(define-test-suite test_add_pairs
+  (check-equal? (add_pairs '()) '())
+  (check-equal? (add_pairs '(1 2)) '(3))
+  (check-equal? (add_pairs '(1 2 3 4)) '(3 7))
+  (check-equal? (add_pairs '(2 2 2 2)) '(4 4))
+  (check-equal? (add_pairs '(0 -1 -2 3)) '(-1 1))
+  (check-equal? (add_pairs '(1 1 1 1)) '(2 2))
+  (check-equal? (add_pairs '(1 2 3 4 5 6 7 8)) '(3 7 11 15))
+  (check-equal? (add_pairs '(9 9 9 9 9 9)) '(18 18 18))
+  (check-equal? (add_pairs '(7 3 4 6 5 5)) '(10 10 10))
+  (check-equal? (add_pairs '(-9 9 -8 8)) '(0 0))
+  
+)
+(define q5a_score (- 10 (run-tests test_add_pairs 'verbose)))
